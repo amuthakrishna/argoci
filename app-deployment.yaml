@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bankapp-blue
+  namespace: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bankapp
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: bankapp
+        version: blue
+    spec:
+      containers:
+      - name: bankapp
+        image: krishnamoorthy1/argocd:v1  # Placeholder for sed replacement
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bankapp-service
+  namespace: web
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: bankapp
+    version: blue 
