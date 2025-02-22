@@ -1,4 +1,4 @@
-OM ubuntu:22.04
+FROM ubuntu:22.04
 
 # Update the package manager
 RUN apt-get update
