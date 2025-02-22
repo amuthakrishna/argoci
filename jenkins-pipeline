@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'DOCKER_TAG', defaultValue: 'latest')
+    }
+
+    stages {
+        stage('GitCheckout') {
+            steps {
+                git branch: 'main', credentialsId: 'git-cre', url: 'https://github.com/amuthakrishna/argoci.git'
+            }
+        }
+        
+        stage('Docker build') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-hub') {
+                        sh "docker build -t krishnamoorthy1/argocd:${params.DOCKER_TAG} ."
+                        }
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-hub') {
+                        sh "docker push krishnamoorthy1/argocd:${params.DOCKER_TAG}"
+                    }
+                }
+            }
+        }
+        stage('Update docker image version') {
+            steps {
+                script {
+                    withCredentials([gitUsernamePassword(credentialsId: 'git-cre', gitToolName: 'Default')]) {
+                        sh '''
+                            repo_dir=$(pwd)
+                            sed -i 's|image: krishnamoorthy1/argocd:.*|image: krishnamoorthy1/argocd:'${DOCKER_TAG}'|' ${repo_dir}/app-deployment.yaml
+                            cat app-deployment.yaml
+                        
+                        '''   
+                        sh '''
+                            git config --global user.email "amuthakrishna1988@gmail.com"
+                            git config --global user.name "amuthakrishna"
+                            git add app-deployment.yaml
+                            git commit -m "Updated image tag to ${DOCKER_TAG}"
+                            git push origin main
+                        '''
+                    }
+                    
+                    
+                }
+            }
+        }
+    }
+}
