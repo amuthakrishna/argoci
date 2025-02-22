@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: krishnamoorthy1/argocd:v2  # Placeholder for sed replacement
+        image: krishnamoorthy1/argocd:v11  # Placeholder for sed replacement
         ports:
         - containerPort: 80
 ---
