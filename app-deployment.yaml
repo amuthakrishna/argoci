@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: krishnamoorthy1/argocd:v15
+        image: krishnamoorthy1/argocd:mar-v1
         ports:
         - containerPort: 80
 ---
